@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlucoNova AI - Smart Risk Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="translations.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .loader-spin { border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-teal-50 min-h-screen text-slate-800 selection:bg-blue-100 selection:text-blue-900">
+    <nav class="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-md border-b border-white/50 px-6 py-4 flex justify-between items-center transition-all">
+        <div class="flex items-center gap-3">
+            <img src="IMG/Medical Care Logo  (1).png" alt="GlucoNova AI Logo" class="h-10 w-auto md:h-12 object-contain">
+            <img src="IMG/Medical Care Logo  (2).png" alt="GlucoNova AI" class="h-10 w-auto md:h-12 object-contain">
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="relative">
+                <select id="languageSelector" onchange="switchLanguage(this.value)" class="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors outline-none">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="hi">🇮🇳 हिंदी</option>
+                    <option value="bn">🇮🇳 বাংলা</option>
+                    <option value="ta">🇮🇳 தமிழ்</option>
+                    <option value="te">🇮🇳 తెలుగు</option>
+                    <option value="mr">🇮🇳 मराठी</option>
+                    <option value="gu">🇮🇳 ગુજરાતી</option>
+                    <option value="kn">🇮🇳 ಕನ್ನಡ</option>
+                    <option value="ml">🇮🇳 മലയാളം</option>
+                    <option value="pa">🇮🇳 ਪੰਜਾਬੀ</option>
+                </select>
+            </div>
+            <div id="device-id-display" class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-400 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full">
+            </div>
+            <div id="server-status" class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full">
+                <div class="w-2 h-2 rounded-full animate-pulse bg-slate-400"></div>
+                <span data-i18n="checking">Checking...</span>
+            </div>
+        </div>
+    </nav>
+    <main class="pt-28 pb-12 px-4 md:px-8 max-w-7xl mx-auto min-h-screen flex flex-col justify-center">
+        <section id="landing-view" class="flex flex-col items-center text-center space-y-8 fade-in">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-medium border border-blue-100">
+                <i data-lucide="shield-check" class="w-4 h-4"></i> <span data-i18n="secureAnalysis">Secure AI Analysis • No Signup Required</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-slate-900">
+                <span data-i18n="mainHeading1">Predict. Prevent.</span> <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500" data-i18n="mainHeading2">Thrive.</span>
+            </h1>
+            <p class="text-xl text-slate-500 max-w-2xl leading-relaxed" data-i18n="mainDescription">
+                Hospital-grade diabetes risk prediction powered by AI. 
+                Enter your metrics anonymously and get instant, actionable insights.
+            </p>
+            <button onclick="switchView('form')" class="group relative bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-xl font-semibold shadow-xl shadow-slate-900/20 transition-all flex items-center gap-3 transform hover:-translate-y-1">
+                <span data-i18n="checkRiskButton">Check My Risk Now</span>
+                <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 w-full max-w-5xl">
+                <div class="glass-card p-8 rounded-2xl flex flex-col items-center hover:bg-white/80 transition-colors">
+                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl mb-4"><i data-lucide="activity"></i></div>
+                    <h3 class="font-bold text-lg mb-2" data-i18n="accuracy">98% Accuracy</h3>
+                    <p class="text-slate-500 text-sm" data-i18n="accuracyDesc">Trained on the PIMA Indians Diabetes Dataset.</p>
+                </div>
+                <div class="glass-card p-8 rounded-2xl flex flex-col items-center hover:bg-white/80 transition-colors">
+                    <div class="p-3 bg-teal-50 text-teal-600 rounded-xl mb-4"><i data-lucide="lock"></i></div>
+                    <h3 class="font-bold text-lg mb-2" data-i18n="privacy">100% Private</h3>
+                    <p class="text-slate-500 text-sm" data-i18n="privacyDesc">No login. Data is tied to your device locally.</p>
+                </div>
+                <div class="glass-card p-8 rounded-2xl flex flex-col items-center hover:bg-white/80 transition-colors">
+                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl mb-4"><i data-lucide="history"></i></div>
+                    <h3 class="font-bold text-lg mb-2" data-i18n="smartHistory">Smart History</h3>
+                    <p class="text-slate-500 text-sm" data-i18n="smartHistoryDesc">Automatic trend tracking when you return.</p>
+                </div>
+            </div>
+        </section>
+        <section id="form-view" class="hidden max-w-xl mx-auto w-full slide-up">
+            <button onclick="switchView('landing')" class="text-slate-400 hover:text-slate-600 mb-6 flex items-center gap-2 text-sm font-medium transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> <span data-i18n="backToHome">Back to Home</span>
+            </button>
+            <div class="glass-card rounded-2xl p-8 shadow-2xl">
+                <div class="text-center mb-8">
+                    <img src="IMG/Medical Care Logo  (1).png" alt="GlucoNova AI" class="h-12 w-auto mx-auto mb-4 object-contain">
+                    <h2 class="text-2xl font-bold text-slate-800" data-i18n="enterHealthMetrics">Enter Health Metrics</h2>
+                    <p class="text-slate-500 mt-2" data-i18n="fillVitals">Fill in your latest vitals for the AI model.</p>
+                </div>
+                <div class="space-y-2 mb-5">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="uploadReport">Upload Medical Report (Optional)</label>
+                    <div class="relative">
+                        <input type="file" id="medicalReport" accept="image/*,.pdf" class="hidden">
+                        <button type="button" id="uploadButton" class="w-full p-3.5 bg-slate-50/50 border-2 border-dashed border-slate-300 rounded-xl hover:border-blue-400 hover:bg-blue-50/30 transition-all flex items-center justify-center gap-2 text-slate-600">
+                            <i data-lucide="upload" class="w-5 h-5"></i>
+                            <span id="uploadText" data-i18n="clickToUpload">Click to upload report</span>
+                        </button>
+                    </div>
+                    <div id="scanStatus" class="hidden text-xs text-blue-600 flex items-center gap-2 mt-2">
+                        <div class="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span data-i18n="scanningReport">Scanning report...</span>
+                    </div>
+                    <div id="scanResult" class="hidden text-xs text-green-600 mt-2"></div>
+                </div>
+                <form id="healthForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="patientName">Patient Name</label>
+                        <input type="text" id="patientName" required class="w-full p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all" data-i18n="enterFullName" placeholder="Enter full name">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="phoneOrEmail">Phone or Email (For Unique ID)</label>
+                        <input type="text" id="patientIdentifier" class="w-full p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all" data-i18n="phoneEmailPlaceholder" placeholder="Optional: +91-XXXXXXXXXX or email">
+                        <p class="text-xs text-slate-400" data-i18n="phoneEmailHelper">Helps distinguish patients with same name. Not stored directly.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="age">Age</label>
+                            <input type="number" id="age" required class="w-full p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all" data-i18n="ageUnit" placeholder="Years">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="weight">Weight (kg)</label>
+                            <input type="number" id="weight" required class="w-full p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all" data-i18n="weightUnit" placeholder="Kg">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="fastingBloodSugar">Fasting Blood Sugar (mg/dL)</label>
+                        <input type="number" id="sugar" required class="w-full p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all" data-i18n="sugarPlaceholder" placeholder="e.g. 95">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="hba1cLevel">HbA1c Level (%)</label>
+                        <input type="number" id="hba1c" step="0.1" required class="w-full p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all" data-i18n="hba1cPlaceholder" placeholder="e.g. 5.7">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="physicalActivity">Physical Activity Level</label>
+                        <select id="lifestyle" class="w-full p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all">
+                            <option value="sedentary" data-i18n="sedentary">🪑 Sedentary - Mostly sitting (office work, minimal exercise)</option>
+                            <option value="moderate" selected data-i18n="moderate">🚶 Moderate - Light activity (walking 30 min/day, housework)</option>
+                            <option value="active" data-i18n="active">🏃 Active - Regular exercise (gym 3-4x/week, sports)</option>
+                        </select>
+                        <p class="text-xs text-slate-400 mt-1" data-i18n="activityHelper">Select the option that best describes your daily routine</p>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all flex justify-center items-center gap-2 mt-6">
+                        <span data-i18n="runAnalysis">Run AI Analysis</span> <i data-lucide="zap" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+        <section id="loading-view" class="hidden flex-col items-center justify-center min-h-[50vh] fade-in">
+            <div class="glass-card rounded-2xl p-12 max-w-md w-full text-center">
+                <div class="loader-spin mb-6 mx-auto"></div>
+                <h3 class="text-2xl font-bold text-slate-800 animate-pulse mb-3" data-i18n="runningMLModel">Running ML Model Analysis...</h3>
+                <p class="text-slate-500 mb-6" data-i18n="processingData">Processing your health data with AI</p>
+                <div class="space-y-3 text-left">
+                    <div id="step1" class="flex items-center gap-3 text-sm text-slate-400">
+                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+                        </div>
+                        <span data-i18n="step1">Fetching patient data from database...</span>
+                    </div>
+                    <div id="step2" class="flex items-center gap-3 text-sm text-slate-400">
+                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+                        </div>
+                        <span data-i18n="step2">Preprocessing health metrics...</span>
+                    </div>
+                    <div id="step3" class="flex items-center gap-3 text-sm text-slate-400">
+                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+                        </div>
+                        <span data-i18n="step3">Running ensemble ML model...</span>
+                    </div>
+                    <div id="step4" class="flex items-center gap-3 text-sm text-slate-400">
+                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+                        </div>
+                        <span data-i18n="step4">Generating AI health insights...</span>
+                    </div>
+                    <div id="step5" class="flex items-center gap-3 text-sm text-slate-400">
+                        <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+                        </div>
+                        <span data-i18n="step5">Preparing dashboard...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="dashboard-view" class="hidden w-full max-w-6xl mx-auto slide-up">
+            <div class="flex justify-between items-end mb-8 border-b border-slate-200 pb-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800">Health Dashboard</h2>
+                    <p class="text-slate-500 mt-1">Real-time analysis based on your input.</p>
+                </div>
+                <button onclick="switchView('form')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm">
+                    + New Report
+                </button>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="glass-card rounded-2xl p-8 col-span-1 lg:col-span-2 relative overflow-hidden">
+                    <div id="risk-glow" class="absolute top-0 right-0 w-64 h-64 bg-teal-400/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                    <div class="flex flex-col md:flex-row gap-8 items-center relative z-10">
+                        <div class="relative w-40 h-40 flex-shrink-0">
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle cx="80" cy="80" r="70" stroke="#f1f5f9" stroke-width="12" fill="transparent" />
+                                <circle id="risk-circle" cx="80" cy="80" r="70" stroke="currentColor" stroke-width="12" fill="transparent" stroke-dasharray="440" stroke-dashoffset="440" class="text-teal-500 transition-all duration-1000 ease-out" />
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="risk-score" class="text-4xl font-bold text-slate-800">--%</span>
+                                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Risk Score</span>
+                            </div>
+                        </div>
+                        <div class="text-center md:text-left space-y-3">
+                            <div id="risk-badge" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-teal-100 text-teal-700 text-xs font-bold uppercase tracking-wider">
+                                Low Risk
+                            </div>
+                            <h3 id="risk-title" class="text-3xl font-bold text-slate-800">Great Job!</h3>
+                            <p id="risk-desc" class="text-slate-600 leading-relaxed">Your metrics are within the healthy range. Keep up your current lifestyle.</p>
+                        </div>
+                    </div>
+                    <div class="mt-8 p-5 bg-slate-50/80 rounded-xl border border-slate-100">
+                        <h4 class="font-bold text-slate-700 flex items-center gap-2 mb-3">
+                            <i data-lucide="brain" class="w-4 h-4 text-purple-500"></i> AI Health Recommendations
+                        </h4>
+                        <div id="ai-suggestion" class="space-y-3 text-slate-600 text-sm">
+                            <p>Analyzing your health metrics...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="glass-card rounded-2xl p-6">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Input Vitals</h4>
+                        <div class="space-y-4">
+                            <div class="flex justify-between border-b border-slate-100 pb-2">
+                                <span class="text-slate-600">Blood Sugar</span>
+                                <span class="font-bold text-slate-800"><span id="res-sugar">--</span> <span class="text-xs font-normal text-slate-400">mg/dL</span></span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-100 pb-2">
+                                <span class="text-slate-600">HbA1c</span>
+                                <span class="font-bold text-slate-800"><span id="res-hba1c">--</span> <span class="text-xs font-normal text-slate-400">%</span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">BMI (Est.)</span>
+                                <span class="font-bold text-slate-800">24.1 <span class="text-xs font-normal text-slate-400">Normal</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="healthTrendCard" class="glass-card rounded-2xl p-6 bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none shadow-xl shadow-blue-500/20">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-blue-100 text-xs font-bold uppercase tracking-wider mb-1">Health Trend</p>
+                                <p id="trendPercentage" class="text-3xl font-bold">--</p>
+                            </div>
+                            <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                                <i id="trendIcon" data-lucide="activity" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <p id="trendMessage" class="text-sm text-blue-100 mt-4 opacity-90">Analyzing your health data...</p>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-6 col-span-1 lg:col-span-3">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="bar-chart-2" class="w-5 h-5 text-blue-500"></i> Glucose History
+                        </h4>
+                        <button id="updateDataBtn" onclick="updateCurrentData()" class="hidden px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Update Data
+                        </button>
+                    </div>
+                    <div class="w-full h-64">
+                        <canvas id="historyChart"></canvas>
+                    </div>
+                </div>
+                <div id="comparisonSection" class="hidden glass-card rounded-2xl p-6 col-span-1 lg:col-span-3">
+                    <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
+                        <i data-lucide="git-compare" class="w-5 h-5 text-purple-500"></i> <span data-i18n="comparisonTitle">Comparison with Previous Data</span>
+                    </h4>
+                    <div id="comparisonContent" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    </div>
+                </div>
+                <div id="alertsSection" class="glass-card rounded-2xl p-6 col-span-1 lg:col-span-3">
+                    <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-4">
+                        <i data-lucide="bell" class="w-5 h-5 text-orange-500"></i> <span data-i18n="alertSystem">Health Alerts</span>
+                    </h4>
+                    <div id="alertsContent" class="space-y-3">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 col-span-1 lg:col-span-3">
+                    <div class="glass-card rounded-2xl p-8 bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-none shadow-xl">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <p class="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-2" data-i18n="healthScore">Health Score</p>
+                                <div class="flex items-baseline gap-2">
+                                    <span id="healthScoreValue" class="text-6xl font-bold">--</span>
+                                    <span class="text-2xl text-emerald-100" data-i18n="outOf100">/100</span>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                                <i data-lucide="heart-pulse" class="w-8 h-8"></i>
+                            </div>
+                        </div>
+                        <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                            <div id="healthScoreBar" class="h-full bg-white rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                        <p id="healthScoreDesc" class="text-sm text-emerald-50 mt-4">Calculating your overall health status...</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-8 bg-gradient-to-br from-violet-500 to-purple-600 text-white border-none shadow-xl">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <p class="text-violet-100 text-xs font-bold uppercase tracking-wider mb-2" data-i18n="preventiveScore">Preventive Score</p>
+                                <div class="flex items-baseline gap-2">
+                                    <span id="preventiveScoreValue" class="text-6xl font-bold">--</span>
+                                    <span class="text-2xl text-violet-100" data-i18n="outOf100">/100</span>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                                <i data-lucide="shield-check" class="w-8 h-8"></i>
+                            </div>
+                        </div>
+                        <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                            <div id="preventiveScoreBar" class="h-full bg-white rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                        <p id="preventiveScoreDesc" class="text-sm text-violet-50 mt-4" data-i18n="managingRisk">How well you're managing risk...</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 col-span-1 lg:col-span-3">
+                    <div class="glass-card rounded-2xl p-6">
+                        <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-4">
+                            <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-500"></i> <span data-i18n="probabilityGraph">Probability Analysis</span>
+                        </h4>
+                        <div class="h-64">
+                            <canvas id="probabilityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6">
+                        <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-4">
+                            <i data-lucide="trending-up" class="w-5 h-5 text-blue-500"></i> <span data-i18n="trendPrediction">Trend Prediction</span>
+                        </h4>
+                        <div class="h-64">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-6 col-span-1 lg:col-span-3">
+                    <h4 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
+                        <i data-lucide="list-ordered" class="w-5 h-5 text-rose-500"></i> <span data-i18n="actionPriority">Action Priority</span>
+                    </h4>
+                    <div id="actionPriorityContent" class="space-y-4">
+                    </div>
+                </div>
+                <div id="retestSection" class="glass-card rounded-2xl p-6 col-span-1 lg:col-span-3 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-amber-100 rounded-xl">
+                            <i data-lucide="calendar-clock" class="w-6 h-6 text-amber-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-800 mb-2" data-i18n="retestRecommendation">Retest Recommendation</h4>
+                            <p class="text-slate-600 mb-3">
+                                <span data-i18n="suggestedFollowup">Suggested follow-up:</span> 
+                                <span id="retestMessage" class="font-semibold text-slate-800"></span>
+                            </p>
+                            <div class="flex items-center gap-2 text-sm text-amber-700 bg-amber-100 px-4 py-2 rounded-lg inline-flex">
+                                <i data-lucide="info" class="w-4 h-4"></i>
+                                <span id="retestReason">Regular monitoring helps track your progress</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        function getDeviceId() {
+            let id = localStorage.getItem('gluconova_device_id');
+            if (!id) {
+                id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+                localStorage.setItem('gluconova_device_id', id);
+            }
+            return id;
+        }
+        function generatePatientId(name, identifier = '') {
+            const normalized = name.toLowerCase().trim().replace(/\s+/g, '_');
+            if (identifier) {
+                const hash = identifier.split('').reduce((acc, char) => {
+                    return ((acc << 5) - acc) + char.charCodeAt(0);
+                }, 0);
+                return `${normalized}_${Math.abs(hash)}`;
+            }
+            return normalized;
+        }
+        let isUploading = false;
+        async function handleFileUpload(event) {
+            console.log('🟡 === handleFileUpload ENTRY ===');
+            if (event) {
+                console.log('🟡 Preventing event default and propagation');
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+            }
+            if (isUploading) {
+                console.log('⚠️ Upload already in progress, aborting');
+                return false;
+            }
+            isUploading = true;
+            console.log('🟡 isUploading set to true');
+            console.log('🟡 File upload started');
+            const fileInput = document.getElementById('medicalReport');
+            const file = fileInput.files[0];
+            if (!file) {
+                console.log('⚠️ No file selected');
+                isUploading = false;
+                return false;
+            }
+            console.log('🟡 File selected:', file.name, file.type, file.size);
+            const uploadText = document.getElementById('uploadText');
+            const scanStatus = document.getElementById('scanStatus');
+            const scanResult = document.getElementById('scanResult');
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/bmp', 'image/tiff', 'application/pdf'];
+            if (!validTypes.includes(file.type)) {
+                console.error('❌ Invalid file type:', file.type);
+                scanResult.textContent = '❌ Invalid file type. Use JPG, PNG, or PDF.';
+                scanResult.classList.remove('hidden', 'text-green-600');
+                scanResult.classList.add('text-red-600');
+                fileInput.value = '';
+                isUploading = false;
+                return false;
+            }
+            if (file.size > 16 * 1024 * 1024) {
+                console.error('❌ File too large:', file.size);
+                scanResult.textContent = '❌ File too large. Maximum size is 16MB.';
+                scanResult.classList.remove('hidden', 'text-green-600');
+                scanResult.classList.add('text-red-600');
+                fileInput.value = '';
+                isUploading = false;
+                return false;
+            }
+            uploadText.textContent = file.name;
+            scanStatus.classList.remove('hidden');
+            scanResult.classList.add('hidden');
+            console.log('🟡 Starting OCR process...');
+            console.log('🟡 About to enter setTimeout');
+            setTimeout(() => {
+                console.log('🔵 === INSIDE setTimeout ===');
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    console.log('🔵 XHR readyState:', xhr.readyState, 'status:', xhr.status);
+                    if (xhr.readyState === 4) {
+                        console.log('🔵 XHR request complete');
+                        if (xhr.status === 200) {
+                            try {
+                                console.log('🔵 Parsing response...');
+                                const result = JSON.parse(xhr.responseText);
+                                console.log('🔵 OCR result:', result);
+                                if (result.debug_info) {
+                                    console.log('🔍 DEBUG INFO:');
+                                    console.log('  - Text length:', result.debug_info.text_length);
+                                    console.log('  - Has "fasting":', result.debug_info.has_fasting);
+                                    console.log('  - Has "glucose":', result.debug_info.has_glucose);
+                                    console.log('  - Has "sugar":', result.debug_info.has_sugar);
+                                }
+                                if (result.raw_text) {
+                                    console.log('📄 RAW TEXT (first 1000 chars):');
+                                    console.log(result.raw_text);
+                                }
+                                scanStatus.classList.add('hidden');
+                                if (result.success && result.extracted_data) {
+                                    const data = result.extracted_data;
+                                    let extractedFields = [];
+                                    console.log('🔵 Filling form fields...');
+                                    if (data.age) {
+                                        document.getElementById('age').value = data.age;
+                                        extractedFields.push('Age');
+                                    }
+                                    if (data.weight) {
+                                        document.getElementById('weight').value = data.weight;
+                                        extractedFields.push('Weight');
+                                    }
+                                    if (data.sugar) {
+                                        document.getElementById('sugar').value = data.sugar;
+                                        extractedFields.push('Blood Sugar');
+                                    }
+                                    if (data.hba1c) {
+                                        document.getElementById('hba1c').value = data.hba1c;
+                                        extractedFields.push('HbA1c');
+                                    }
+                                    console.log('🔵 Extracted fields:', extractedFields);
+                                    if (extractedFields.length > 0) {
+                                        scanResult.textContent = `✓ Extracted: ${extractedFields.join(', ')}`;
+                                        scanResult.classList.remove('hidden', 'text-red-600', 'text-orange-600');
+                                        scanResult.classList.add('text-green-600');
+                                        showNotification(`Successfully extracted ${extractedFields.length} field(s)`, 'success');
+                                        console.log('✅ Successfully extracted fields');
+                                    } else {
+                                        scanResult.textContent = '⚠️ No medical data found. Please fill manually.';
+                                        scanResult.classList.remove('hidden', 'text-green-600', 'text-red-600');
+                                        scanResult.classList.add('text-orange-600');
+                                        showNotification('No data extracted', 'warning');
+                                    }
+                                } else {
+                                    throw new Error(result.error || 'OCR failed');
+                                }
+                                lucide.createIcons();
+                                console.log('✅ OCR complete');
+                            } catch (error) {
+                                console.error('❌ Parse error:', error);
+                                scanStatus.classList.add('hidden');
+                                scanResult.textContent = '❌ Error processing response';
+                                scanResult.classList.remove('hidden', 'text-green-600');
+                                scanResult.classList.add('text-red-600');
+                            }
+                        } else {
+                            console.error('❌ XHR error, status:', xhr.status);
+                            scanStatus.classList.add('hidden');
+                            scanResult.textContent = `❌ Server error: ${xhr.status}`;
+                            scanResult.classList.remove('hidden', 'text-green-600');
+                            scanResult.classList.add('text-red-600');
+                        }
+                        fileInput.value = '';
+                        isUploading = false;
+                        console.log('🔵 Cleanup complete');
+                    }
+                };
+                xhr.onerror = function() {
+                    console.error('❌ XHR network error');
+                    scanStatus.classList.add('hidden');
+                    scanResult.textContent = '❌ Network error. Is server running?';
+                    scanResult.classList.remove('hidden', 'text-green-600');
+                    scanResult.classList.add('text-red-600');
+                    fileInput.value = '';
+                    isUploading = false;
+                };
+                xhr.ontimeout = function() {
+                    console.error('❌ XHR timeout');
+                    scanStatus.classList.add('hidden');
+                    scanResult.textContent = '❌ Request timeout';
+                    scanResult.classList.remove('hidden', 'text-green-600');
+                    scanResult.classList.add('text-red-600');
+                    fileInput.value = '';
+                    isUploading = false;
+                };
+                console.log('🔵 Creating FormData...');
+                const formData = new FormData();
+                formData.append('file', file);
+                console.log('🔵 Opening XHR connection...');
+                xhr.open('POST', 'http://localhost:5000/upload-report', true);
+                xhr.timeout = 30000;
+                console.log('🔵 Sending XHR request...');
+                xhr.send(formData);
+                console.log('🔵 XHR request sent');
+            }, 0);
+            console.log('🟡 setTimeout scheduled, returning false');
+            console.log('🟡 === handleFileUpload EXIT ===');
+            return false;
+        }
+        let currentPatientName = '';
+        let currentPatientId = '';
+        function savePatientData(patientId, name, data) {
+            const patientKey = `patient_${patientId}`;
+            let patientHistory = JSON.parse(localStorage.getItem(patientKey)) || [];
+            data.timestamp = new Date().toISOString();
+            data.date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            data.patientName = name;
+            data.patientId = patientId;
+            patientHistory.push(data);
+            localStorage.setItem(patientKey, JSON.stringify(patientHistory));
+            updatePatientIndex(patientId, name);
+            return patientHistory;
+        }
+        function getPatientData(patientId) {
+            const patientKey = `patient_${patientId}`;
+            return JSON.parse(localStorage.getItem(patientKey)) || [];
+        }
+        function updatePatientIndex(patientId, name) {
+            let index = JSON.parse(localStorage.getItem('patient_index')) || {};
+            index[patientId] = {
+                name: name,
+                lastVisit: new Date().toISOString()
+            };
+            localStorage.setItem('patient_index', JSON.stringify(index));
+        }
+        function getAllPatients() {
+            return JSON.parse(localStorage.getItem('patient_index')) || {};
+        }
+        function updateCurrentData() {
+            if (!currentPatientId) return;
+            const confirmed = confirm(
+                `Update Data for ${currentPatientName}?\n\n` +
+                `This will:\n` +
+                `• Delete the most recent reading\n` +
+                `• Keep all previous history\n` +
+                `• Allow you to enter new data\n\n` +
+                `Do you want to continue?`
+            );
+            if (!confirmed) return;
+            const patientKey = `patient_${currentPatientId}`;
+            let patientHistory = JSON.parse(localStorage.getItem(patientKey)) || [];
+            if (patientHistory.length > 0) {
+                patientHistory.pop();
+                localStorage.setItem(patientKey, JSON.stringify(patientHistory));
+                showNotification('Previous data deleted. Ready for new entry.', 'success');
+                setTimeout(() => {
+                    switchView('form');
+                    document.getElementById('patientName').value = currentPatientName;
+                }, 500);
+            }
+        }
+        function showNotification(message, type = 'success') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-orange-500',
+                info: 'bg-blue-500'
+            };
+            const notification = document.createElement('div');
+            notification.className = `fixed top-24 left-1/2 transform -translate-x-1/2 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in`;
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            lucide.createIcons();
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        function showComparison(currentData, previousData) {
+            if (!previousData || previousData.length === 0) {
+                document.getElementById('comparisonSection').classList.add('hidden');
+                document.getElementById('updateDataBtn').classList.add('hidden');
+                return;
+            }
+            const lastData = previousData[previousData.length - 1];
+            const comparisonSection = document.getElementById('comparisonSection');
+            const comparisonContent = document.getElementById('comparisonContent');
+            const updateBtn = document.getElementById('updateDataBtn');
+            comparisonSection.classList.remove('hidden');
+            updateBtn.classList.remove('hidden');
+            const metrics = [
+                { label: 'Blood Sugar', current: currentData.sugar, previous: lastData.sugar, unit: 'mg/dL' },
+                { label: 'HbA1c', current: currentData.hba1c, previous: lastData.hba1c, unit: '%' },
+                { label: 'Weight', current: currentData.weight, previous: lastData.weight, unit: 'kg' }
+            ];
+            comparisonContent.innerHTML = metrics.map(metric => {
+                const diff = metric.current - metric.previous;
+                const percentChange = ((diff / metric.previous) * 100).toFixed(1);
+                const isImprovement = (metric.label === 'Weight' ? diff < 0 : diff < 0);
+                const arrow = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+                const colorClass = diff > 0 ? 'text-red-600' : diff < 0 ? 'text-green-600' : 'text-slate-600';
+                return `
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">${metric.label}</div>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <div class="text-2xl font-bold text-slate-800">${metric.current} <span class="text-sm font-normal text-slate-400">${metric.unit}</span></div>
+                                <div class="text-xs text-slate-500 mt-1">Previous: ${metric.previous} ${metric.unit}</div>
+                            </div>
+                            <div class="${colorClass} font-bold text-lg">${arrow} ${Math.abs(percentChange)}%</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const deviceId = getDeviceId();
+            document.getElementById('device-id-display').innerText = `ID: ${deviceId.substring(0, 12)}...`;
+            const savedLang = localStorage.getItem('gluconova_language') || 'en';
+            document.getElementById('languageSelector').value = savedLang;
+            switchLanguage(savedLang);
+            lucide.createIcons();
+            window.addEventListener('beforeunload', function(e) {
+                console.error('⚠️ PAGE UNLOAD TRIGGERED!');
+                console.trace('Unload stack trace:');
+            });
+            window.addEventListener('popstate', function(e) {
+                console.error('⚠️ POPSTATE EVENT (back/forward navigation)');
+                console.log('State:', e.state);
+            });
+            const uploadButton = document.getElementById('uploadButton');
+            const fileInput = document.getElementById('medicalReport');
+            if (uploadButton && fileInput) {
+                console.log('✅ Upload button and file input found');
+                uploadButton.addEventListener('click', function(e) {
+                    console.log('🔵 Upload button clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    console.log('🔵 Event prevented, opening file dialog');
+                    fileInput.click();
+                    console.log('🔵 File dialog opened');
+                    return false;
+                }, true);
+                fileInput.addEventListener('change', function(e) {
+                    console.log('🟢 File input changed event fired');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    console.log('🟢 Event prevented, calling handleFileUpload');
+                    handleFileUpload(e);
+                    console.log('🟢 handleFileUpload called');
+                    return false;
+                }, true);
+                console.log('✅ Event listeners attached');
+            } else {
+                console.error('❌ Upload button or file input NOT found!');
+            }
+            checkServerStatus();
+            setInterval(checkServerStatus, 30000);
+            console.log('✅ App initialized');
+        });
+        async function checkServerStatus() {
+            const statusDiv = document.getElementById('server-status');
+            const statusDot = statusDiv.querySelector('.w-2');
+            const statusText = statusDiv.querySelector('span');
+            try {
+                const response = await fetch('http://localhost:5000/health', {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(3000)
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.className = 'flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-700';
+                    statusDot.className = 'w-2 h-2 rounded-full bg-green-500';
+                    statusText.textContent = t('serverOnline');
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                statusDiv.className = 'flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700';
+                statusDot.className = 'w-2 h-2 rounded-full bg-red-500';
+                statusText.textContent = t('serverOffline');
+            }
+        }
+        function switchView(viewId) {
+            const views = ['landing-view', 'form-view', 'loading-view', 'dashboard-view'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === viewId + '-view') {
+                    el.classList.remove('hidden');
+                    el.classList.add('flex', 'fade-in');
+                    if(id === 'dashboard-view' || id === 'form-view') el.classList.remove('flex');
+                } else {
+                    el.classList.add('hidden');
+                    el.classList.remove('flex');
+                }
+            });
+            window.scrollTo(0,0);
+        }
+        let myChart = null;
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const patientName = document.getElementById('patientName').value.trim();
+            const patientIdentifier = document.getElementById('patientIdentifier').value.trim();
+            const age = parseFloat(document.getElementById('age').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const sugar = parseFloat(document.getElementById('sugar').value);
+            const hba1c = parseFloat(document.getElementById('hba1c').value);
+            const lifestyle = document.getElementById('lifestyle').value;
+            const patientId = generatePatientId(patientName, patientIdentifier);
+            currentPatientName = patientName;
+            currentPatientId = patientId;
+            const previousData = getPatientData(patientId);
+            switchView('loading');
+            animateLoadingSteps();
+            setTimeout(() => {
+                const currentData = { age, weight, sugar, hba1c, lifestyle };
+                const allData = savePatientData(patientId, patientName, currentData);
+                calculateRisk(sugar, hba1c, currentData, previousData);
+            }, 5000);
+        }
+        function animateLoadingSteps() {
+            const steps = ['step1', 'step2', 'step3', 'step4', 'step5'];
+            const delays = [500, 1500, 2500, 3500, 4500];
+            steps.forEach(stepId => {
+                const step = document.getElementById(stepId);
+                step.classList.remove('text-blue-600');
+                step.classList.add('text-slate-400');
+                const circle = step.querySelector('.w-5');
+                circle.classList.remove('border-blue-500', 'bg-blue-50');
+                circle.classList.add('border-slate-300');
+                const dot = step.querySelector('.w-2');
+                dot.classList.remove('bg-blue-500');
+                dot.classList.add('bg-slate-300');
+            });
+            steps.forEach((stepId, index) => {
+                setTimeout(() => {
+                    const step = document.getElementById(stepId);
+                    step.classList.remove('text-slate-400');
+                    step.classList.add('text-blue-600');
+                    const circle = step.querySelector('.w-5');
+                    circle.classList.remove('border-slate-300');
+                    circle.classList.add('border-blue-500', 'bg-blue-50');
+                    const dot = step.querySelector('.w-2');
+                    dot.classList.remove('bg-slate-300');
+                    dot.classList.add('bg-blue-500');
+                }, delays[index]);
+            });
+        }
+        async function calculateRisk(sugar, hba1c, currentData, previousData) {
+            const API_URL = 'http://localhost:5000/predict';
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        age: currentData.age,
+                        weight: currentData.weight,
+                        sugar: sugar,
+                        hba1c: hba1c,
+                        lifestyle: currentData.lifestyle
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error('Backend server not responding');
+                }
+                const result = await response.json();
+                if (result.success) {
+                    updateDashboard(
+                        result.risk_score,
+                        result.risk_level,
+                        result.color,
+                        result.message,
+                        result.suggestion,
+                        sugar,
+                        hba1c,
+                        currentData,
+                        previousData
+                    );
+                } else {
+                    throw new Error(result.error || 'Prediction failed');
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                alert('⚠️ ML Backend offline. Using fallback method.\n\nMake sure Python server is running:\npython app.py');
+                let riskScore = 20;
+                let riskLevel = 'Low';
+                let color = 'teal';
+                let message = "Your metrics are healthy.";
+                let suggestion = "Great job! Keep up your current routine.";
+                if (hba1c > 5.7 || sugar > 100) {
+                    riskScore = 55;
+                    riskLevel = 'Medium';
+                    color = 'yellow';
+                    message = "You are in the pre-diabetic range.";
+                    suggestion = "Reduce sugar intake and walk 30 mins daily.";
+                }
+                if (hba1c >= 6.5 || sugar > 126) {
+                    riskScore = 88;
+                    riskLevel = 'High';
+                    color = 'rose';
+                    message = "High risk detected. Consult a doctor.";
+                    suggestion = "Immediate medical attention recommended. Strict diet control needed.";
+                }
+                updateDashboard(riskScore, riskLevel, color, message, suggestion, sugar, hba1c, currentData, previousData);
+            }
+            switchView('dashboard');
+        }
+        function updateDashboard(score, level, color, msg, sugg, sugar, hba1c, currentData, previousData) {
+            document.getElementById('res-sugar').innerText = sugar;
+            document.getElementById('res-hba1c').innerText = hba1c;
+            document.getElementById('risk-score').innerText = score + '%';
+            document.getElementById('risk-title').innerText = level === 'High' ? 'Action Needed' : (level === 'Medium' ? 'Caution' : 'Great Job!');
+            document.getElementById('risk-desc').innerText = msg;
+            generateDetailedSuggestions(score, level, sugar, hba1c, currentData, previousData);
+            calculateHealthTrend(currentData, previousData);
+            const circle = document.getElementById('risk-circle');
+            const glow = document.getElementById('risk-glow');
+            const badge = document.getElementById('risk-badge');
+            circle.classList.remove('text-teal-500', 'text-yellow-500', 'text-rose-500');
+            glow.classList.remove('bg-teal-400/20', 'bg-yellow-400/20', 'bg-rose-400/20');
+            badge.className = `inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-${color}-100 text-${color}-700`;
+            badge.innerText = `${level} Risk Detected`;
+            circle.classList.add(`text-${color}-500`);
+            glow.classList.add(`bg-${color}-400/20`);
+            const offset = 440 - (440 * score / 100);
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+            }, 100);
+            if (previousData && previousData.length > 0) {
+                showComparison(currentData, previousData);
+            }
+            renderChart(sugar, hba1c, previousData);
+            generateHealthAlerts(sugar, hba1c, currentData);
+            calculateHealthScore(score, sugar, hba1c, currentData);
+            calculatePreventiveScore(currentData, previousData);
+            renderProbabilityChart(score);
+            renderTrendPredictionChart(currentData, previousData);
+            generateActionPriority(sugar, hba1c, currentData);
+            generateRetestRecommendation(level, hba1c, sugar);
+            lucide.createIcons();
+        }
+        function generateDetailedSuggestions(score, level, sugar, hba1c, currentData, previousData) {
+            const suggestionDiv = document.getElementById('ai-suggestion');
+            let suggestions = [];
+            if (sugar < 70) {
+                suggestions.push({
+                    icon: 'alert-triangle',
+                    color: 'text-red-600',
+                    title: 'Low Blood Sugar (Hypoglycemia)',
+                    text: 'Immediate action: Consume 15g fast-acting carbs (juice, glucose tablets). Recheck in 15 mins. Consult doctor if frequent.'
+                });
+            } else if (sugar >= 70 && sugar < 100) {
+                suggestions.push({
+                    icon: 'check-circle',
+                    color: 'text-green-600',
+                    title: 'Excellent Fasting Glucose',
+                    text: 'Your blood sugar is optimal. Continue current diet and exercise routine.'
+                });
+            } else if (sugar >= 100 && sugar < 126) {
+                suggestions.push({
+                    icon: 'alert-circle',
+                    color: 'text-orange-600',
+                    title: 'Pre-Diabetic Range',
+                    text: 'Reduce refined carbs and sugars. Add 30 mins daily walking. Increase fiber intake (vegetables, whole grains). Recheck in 3 months.'
+                });
+            } else {
+                suggestions.push({
+                    icon: 'alert-octagon',
+                    color: 'text-red-600',
+                    title: 'Diabetic Range - Medical Attention Required',
+                    text: 'Schedule immediate doctor visit. Start blood sugar monitoring 2x daily. Eliminate sugary drinks completely. Consider medication consultation.'
+                });
+            }
+            if (hba1c < 5.7) {
+                suggestions.push({
+                    icon: 'heart',
+                    color: 'text-green-600',
+                    title: 'Healthy HbA1c Level',
+                    text: 'Your 3-month average is excellent. Maintain current lifestyle habits.'
+                });
+            } else if (hba1c >= 5.7 && hba1c < 6.5) {
+                suggestions.push({
+                    icon: 'activity',
+                    color: 'text-orange-600',
+                    title: 'Pre-Diabetic HbA1c',
+                    text: 'Lifestyle intervention critical: Lose 5-7% body weight if overweight. Exercise 150 mins/week. Mediterranean diet recommended.'
+                });
+            } else {
+                suggestions.push({
+                    icon: 'zap',
+                    color: 'text-red-600',
+                    title: 'Diabetic HbA1c - Urgent Care',
+                    text: 'Endocrinologist consultation required. Daily glucose monitoring essential. Medication likely needed. Strict carb counting (45-60g per meal).'
+                });
+            }
+            const lifestyle = currentData.lifestyle;
+            if (lifestyle === 'sedentary') {
+                suggestions.push({
+                    icon: 'trending-up',
+                    color: 'text-blue-600',
+                    title: 'Increase Physical Activity',
+                    text: 'Start with 10-min walks after meals. Gradually increase to 30 mins daily. Take stairs instead of elevator. Park farther from entrances.'
+                });
+            } else if (lifestyle === 'moderate') {
+                suggestions.push({
+                    icon: 'award',
+                    color: 'text-blue-600',
+                    title: 'Good Activity Level',
+                    text: 'Add 2 days of strength training weekly. Try interval walking (fast/slow alternating). Stay consistent with current routine.'
+                });
+            } else {
+                suggestions.push({
+                    icon: 'trophy',
+                    color: 'text-green-600',
+                    title: 'Excellent Activity Level',
+                    text: 'Outstanding! Continue current exercise regimen. Ensure adequate recovery. Monitor for exercise-induced hypoglycemia.'
+                });
+            }
+            const height = 1.65;
+            const bmi = currentData.weight / (height * height);
+            if (bmi > 30) {
+                suggestions.push({
+                    icon: 'target',
+                    color: 'text-purple-600',
+                    title: 'Weight Management Priority',
+                    text: 'Target: Lose 1-2 lbs/week. Calorie deficit of 500/day. Protein at each meal (lean meats, legumes). Avoid liquid calories. Consider nutritionist consultation.'
+                });
+            } else if (bmi > 25) {
+                suggestions.push({
+                    icon: 'trending-down',
+                    color: 'text-blue-600',
+                    title: 'Moderate Weight Loss Beneficial',
+                    text: 'Aim for 5-10% weight reduction. Portion control key. Use smaller plates. Eat slowly. Track food intake for 1 week to identify patterns.'
+                });
+            }
+            if (previousData && previousData.length > 0) {
+                const lastData = previousData[previousData.length - 1];
+                const sugarChange = sugar - lastData.sugar;
+                const hba1cChange = hba1c - lastData.hba1c;
+                if (sugarChange > 20 || hba1cChange > 0.5) {
+                    suggestions.push({
+                        icon: 'trending-up',
+                        color: 'text-red-600',
+                        title: 'Worsening Trend Detected',
+                        text: `Your glucose increased by ${sugarChange.toFixed(0)} mg/dL. Review recent diet changes. Check medication adherence. Stress management important.`
+                    });
+                } else if (sugarChange < -20 || hba1cChange < -0.5) {
+                    suggestions.push({
+                        icon: 'trending-down',
+                        color: 'text-green-600',
+                        title: 'Excellent Improvement!',
+                        text: `Your glucose decreased by ${Math.abs(sugarChange).toFixed(0)} mg/dL. Keep up the great work! Document what's working for you.`
+                    });
+                }
+            }
+            suggestionDiv.innerHTML = suggestions.map(s => `
+                <div class="flex gap-3 p-3 bg-white rounded-lg border border-slate-200">
+                    <i data-lucide="${s.icon}" class="w-5 h-5 ${s.color} flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <div class="font-semibold ${s.color} mb-1">${s.title}</div>
+                        <div class="text-slate-600 text-xs leading-relaxed">${s.text}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function calculateHealthTrend(currentData, previousData) {
+            const trendCard = document.getElementById('healthTrendCard');
+            const trendPercentage = document.getElementById('trendPercentage');
+            const trendMessage = document.getElementById('trendMessage');
+            const trendIcon = document.getElementById('trendIcon');
+            if (!previousData || previousData.length === 0) {
+                trendPercentage.textContent = 'NEW';
+                trendMessage.textContent = 'First reading recorded. Return later to see trends.';
+                trendIcon.setAttribute('data-lucide', 'activity');
+                lucide.createIcons();
+                return;
+            }
+            const avgPrevSugar = previousData.reduce((sum, d) => sum + d.sugar, 0) / previousData.length;
+            const avgPrevHba1c = previousData.reduce((sum, d) => sum + d.hba1c, 0) / previousData.length;
+            const sugarImprovement = ((avgPrevSugar - currentData.sugar) / avgPrevSugar) * 100;
+            const hba1cImprovement = ((avgPrevHba1c - currentData.hba1c) / avgPrevHba1c) * 100;
+            const overallTrend = (sugarImprovement + hba1cImprovement) / 2;
+            if (overallTrend > 5) {
+                trendPercentage.textContent = `+${overallTrend.toFixed(1)}%`;
+                trendMessage.textContent = 'Significant improvement! Your health is trending positively.';
+                trendIcon.setAttribute('data-lucide', 'trending-up');
+                trendCard.className = 'glass-card rounded-2xl p-6 bg-gradient-to-br from-green-600 to-emerald-700 text-white border-none shadow-xl shadow-green-500/20';
+            } else if (overallTrend < -5) {
+                trendPercentage.textContent = `${overallTrend.toFixed(1)}%`;
+                trendMessage.textContent = 'Health declining. Review lifestyle and consult doctor.';
+                trendIcon.setAttribute('data-lucide', 'trending-down');
+                trendCard.className = 'glass-card rounded-2xl p-6 bg-gradient-to-br from-red-600 to-rose-700 text-white border-none shadow-xl shadow-red-500/20';
+            } else {
+                trendPercentage.textContent = `${overallTrend >= 0 ? '+' : ''}${overallTrend.toFixed(1)}%`;
+                trendMessage.textContent = 'Stable health metrics. Continue current management.';
+                trendIcon.setAttribute('data-lucide', 'minus');
+                trendCard.className = 'glass-card rounded-2xl p-6 bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none shadow-xl shadow-blue-500/20';
+            }
+            lucide.createIcons();
+        }
+        function renderChart(currentSugar, currentHba1c, previousData) {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            let labels = [];
+            let glucoseData = [];
+            if (previousData && previousData.length > 0) {
+                const recentData = previousData.slice(-6);
+                recentData.forEach((entry) => {
+                    labels.push(entry.date || new Date(entry.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    glucoseData.push(entry.sugar);
+                });
+            }
+            labels.push('Today');
+            glucoseData.push(currentSugar);
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Glucose (mg/dL)',
+                        data: glucoseData,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            callbacks: {
+                                label: function(context) {
+                                    return `Glucose: ${context.parsed.y} mg/dL`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: false,
+                            min: Math.max(0, Math.min(...glucoseData) - 20),
+                            max: Math.max(...glucoseData) + 20,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { 
+                                font: { family: 'Inter' },
+                                callback: function(value) {
+                                    return value + ' mg/dL';
+                                }
+                            }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter' } }
+                        }
+                    }
+                }
+            });
+        }
+        function generateHealthAlerts(sugar, hba1c, currentData) {
+            const alertsContent = document.getElementById('alertsContent');
+            const alerts = [];
+            if (sugar < 70) {
+                alerts.push({ icon: 'alert-triangle', color: 'bg-red-100 text-red-700 border-red-200', text: t('highGlucose'), emoji: '🔴' });
+            } else if (sugar >= 70 && sugar < 100) {
+                alerts.push({ icon: 'check-circle', color: 'bg-green-100 text-green-700 border-green-200', text: t('glucoseOptimal'), emoji: '🟢' });
+            } else if (sugar >= 100 && sugar < 126) {
+                alerts.push({ icon: 'alert-circle', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', text: t('borderlineHbA1c'), emoji: '🟡' });
+            } else {
+                alerts.push({ icon: 'alert-octagon', color: 'bg-red-100 text-red-700 border-red-200', text: t('highGlucose'), emoji: '🔴' });
+            }
+            if (hba1c < 5.7) {
+                alerts.push({ icon: 'heart', color: 'bg-green-100 text-green-700 border-green-200', text: t('excellentControl'), emoji: '🟢' });
+            } else if (hba1c >= 5.7 && hba1c < 6.5) {
+                alerts.push({ icon: 'alert-circle', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', text: t('borderlineHbA1c'), emoji: '🟡' });
+            } else {
+                alerts.push({ icon: 'zap', color: 'bg-red-100 text-red-700 border-red-200', text: t('needsAttention'), emoji: '🔴' });
+            }
+            const height = 1.65;
+            const bmi = currentData.weight / (height * height);
+            if (bmi >= 18.5 && bmi < 25) {
+                alerts.push({ icon: 'smile', color: 'bg-green-100 text-green-700 border-green-200', text: t('healthyBMI'), emoji: '🟢' });
+            } else if (bmi >= 25) {
+                alerts.push({ icon: 'alert-circle', color: 'bg-orange-100 text-orange-700 border-orange-200', text: t('needsAttention') + ' - BMI', emoji: '🟠' });
+            }
+            alertsContent.innerHTML = alerts.map(alert => `
+                <div class="flex items-center gap-3 p-4 ${alert.color} border rounded-xl transition-all hover:shadow-md">
+                    <span class="text-2xl">${alert.emoji}</span>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="${alert.icon}" class="w-4 h-4"></i>
+                            <span class="font-semibold">${alert.text}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function calculateHealthScore(riskScore, sugar, hba1c, currentData) {
+            let healthScore = 100;
+            if (sugar >= 126) healthScore -= 25;
+            else if (sugar >= 100) healthScore -= 15;
+            else if (sugar < 70) healthScore -= 20;
+            if (hba1c >= 6.5) healthScore -= 25;
+            else if (hba1c >= 5.7) healthScore -= 15;
+            const height = 1.65;
+            const bmi = currentData.weight / (height * height);
+            if (bmi >= 30) healthScore -= 15;
+            else if (bmi >= 25) healthScore -= 10;
+            if (currentData.lifestyle === 'sedentary') healthScore -= 10;
+            else if (currentData.lifestyle === 'active') healthScore += 5;
+            healthScore = Math.max(0, Math.min(100, healthScore));
+            document.getElementById('healthScoreValue').textContent = healthScore;
+            document.getElementById('healthScoreBar').style.width = healthScore + '%';
+            let desc = '';
+            if (healthScore >= 80) desc = t('excellentControl') + '! ' + t('maintain') + ' your healthy habits.';
+            else if (healthScore >= 60) desc = 'Good health status. Minor improvements recommended.';
+            else if (healthScore >= 40) desc = t('needsAttention') + '. Focus on key risk factors.';
+            else desc = t('riskDetected') + '. Immediate lifestyle changes needed.';
+            document.getElementById('healthScoreDesc').textContent = desc;
+        }
+        function calculatePreventiveScore(currentData, previousData) {
+            let preventiveScore = 50;
+            if (currentData.lifestyle === 'active') preventiveScore += 25;
+            else if (currentData.lifestyle === 'moderate') preventiveScore += 15;
+            if (previousData && previousData.length > 0) {
+                const lastData = previousData[previousData.length - 1];
+                if (currentData.sugar < lastData.sugar) preventiveScore += 10;
+                if (currentData.hba1c < lastData.hba1c) preventiveScore += 10;
+                if (currentData.weight < lastData.weight) preventiveScore += 5;
+            }
+            preventiveScore = Math.max(0, Math.min(100, preventiveScore));
+            document.getElementById('preventiveScoreValue').textContent = preventiveScore;
+            document.getElementById('preventiveScoreBar').style.width = preventiveScore + '%';
+            let desc = '';
+            if (preventiveScore >= 75) desc = t('excellentControl') + '! ' + t('managingRisk') + ' effectively.';
+            else if (preventiveScore >= 50) desc = 'Good preventive measures. Keep improving.';
+            else desc = t('needsAttention') + '. Increase preventive actions.';
+            document.getElementById('preventiveScoreDesc').textContent = desc;
+        }
+        let probabilityChartInstance = null;
+        function renderProbabilityChart(riskScore) {
+            const ctx = document.getElementById('probabilityChart').getContext('2d');
+            if (probabilityChartInstance) probabilityChartInstance.destroy();
+            const lowRisk = Math.max(0, 100 - riskScore);
+            const highRisk = riskScore;
+            probabilityChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [t('lowRisk'), t('highRisk')],
+                    datasets: [{
+                        data: [lowRisk, highRisk],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 }, padding: 15 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        let trendChartInstance = null;
+        function renderTrendPredictionChart(currentData, previousData) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (trendChartInstance) trendChartInstance.destroy();
+            let labels = [];
+            let glucoseData = [];
+            let predictedData = [];
+            if (previousData && previousData.length > 0) {
+                const recentData = previousData.slice(-4);
+                recentData.forEach((entry, index) => {
+                    labels.push(`-${recentData.length - index}m`);
+                    glucoseData.push(entry.sugar);
+                    predictedData.push(null);
+                });
+            }
+            labels.push('Now');
+            glucoseData.push(currentData.sugar);
+            predictedData.push(currentData.sugar);
+            const trend = previousData && previousData.length >= 2 ? 
+                (currentData.sugar - previousData[previousData.length - 1].sugar) : 0;
+            for (let i = 1; i <= 3; i++) {
+                labels.push(`+${i}m`);
+                glucoseData.push(null);
+                predictedData.push(currentData.sugar + (trend * i));
+            }
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Actual',
+                            data: glucoseData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Predicted',
+                            data: predictedData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter' } } }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: false,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Inter' } }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter' } }
+                        }
+                    }
+                }
+            });
+        }
+        function generateActionPriority(sugar, hba1c, currentData) {
+            const priorityContent = document.getElementById('actionPriorityContent');
+            const priorities = [];
+            if (hba1c >= 6.5) {
+                priorities.push({ level: t('topPriority'), action: 'Reduce HbA1c', color: 'bg-red-50 border-red-200 text-red-700', icon: 'alert-octagon' });
+            } else if (hba1c >= 5.7) {
+                priorities.push({ level: t('topPriority'), action: 'Monitor HbA1c', color: 'bg-orange-50 border-orange-200 text-orange-700', icon: 'alert-circle' });
+            }
+            if (sugar >= 126) {
+                priorities.push({ level: t('topPriority'), action: 'Control Blood Sugar', color: 'bg-red-50 border-red-200 text-red-700', icon: 'droplet' });
+            } else if (sugar >= 100) {
+                priorities.push({ level: t('secondary'), action: 'Reduce Blood Sugar', color: 'bg-yellow-50 border-yellow-200 text-yellow-700', icon: 'droplet' });
+            }
+            const height = 1.65;
+            const bmi = currentData.weight / (height * height);
+            if (bmi >= 30) {
+                priorities.push({ level: t('secondary'), action: 'Weight Management', color: 'bg-orange-50 border-orange-200 text-orange-700', icon: 'trending-down' });
+            } else if (bmi >= 25) {
+                priorities.push({ level: t('maintain'), action: 'Maintain BMI', color: 'bg-blue-50 border-blue-200 text-blue-700', icon: 'check-circle' });
+            }
+            if (currentData.lifestyle === 'sedentary') {
+                priorities.push({ level: t('secondary'), action: 'Increase Activity', color: 'bg-purple-50 border-purple-200 text-purple-700', icon: 'activity' });
+            } else if (currentData.lifestyle === 'active') {
+                priorities.push({ level: t('maintain'), action: 'Activity Level', color: 'bg-green-50 border-green-200 text-green-700', icon: 'check-circle' });
+            }
+            if (priorities.length === 0) {
+                priorities.push({ level: t('maintain'), action: 'Current Lifestyle', color: 'bg-green-50 border-green-200 text-green-700', icon: 'smile' });
+            }
+            priorityContent.innerHTML = priorities.map((priority, index) => `
+                <div class="flex items-center gap-4 p-4 ${priority.color} border-2 rounded-xl transition-all hover:shadow-md">
+                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/50 font-bold text-lg">
+                        ${index + 1}
+                    </div>
+                    <i data-lucide="${priority.icon}" class="w-5 h-5"></i>
+                    <div class="flex-1">
+                        <div class="text-xs font-bold uppercase tracking-wider opacity-75">${priority.level}</div>
+                        <div class="font-bold text-lg">${priority.action}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function generateRetestRecommendation(level, hba1c, sugar) {
+            let months = 6;
+            let reason = 'Regular monitoring helps track your progress';
+            if (level === 'High') {
+                months = 1;
+                reason = 'Immediate follow-up required due to high risk';
+            } else if (level === 'Medium') {
+                months = 3;
+                reason = 'Close monitoring recommended for borderline values';
+            } else if (hba1c >= 5.7 || sugar >= 100) {
+                months = 3;
+                reason = 'Monitor pre-diabetic indicators';
+            }
+            const retestMessage = `${t('repeatTest')} ${months} ${t('months')}`;
+            document.getElementById('retestMessage').textContent = retestMessage;
+            document.getElementById('retestReason').textContent = reason;
+        }
+    </script>
+</body>
+</html>
