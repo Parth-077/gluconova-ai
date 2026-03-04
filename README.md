@@ -1,32 +1,89 @@
 # 🏥 GlucoNova AI - Diabetes Risk Prediction System
 
+<div align="center">
+
 [![GitHub](https://img.shields.io/badge/GitHub-Parth--077-blue?logo=github)](https://github.com/Parth-077/gluconova-ai)
 [![Python](https://img.shields.io/badge/Python-3.8+-green?logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-black?logo=flask)](https://flask.palletsprojects.com/)
 [![ML](https://img.shields.io/badge/ML-Scikit--learn-orange?logo=scikit-learn)](https://scikit-learn.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+**🔗 [View Repository](https://github.com/Parth-077/gluconova-ai) | [Report Bug](https://github.com/Parth-077/gluconova-ai/issues) | [Request Feature](https://github.com/Parth-077/gluconova-ai/issues)**
+
+![GlucoNova AI Preview](screenshots/landing-page.png)
+
+</div>
+
+---
+
 ## 📋 Project Overview
 
 GlucoNova AI is an advanced web-based diabetes risk prediction system powered by Machine Learning. It provides comprehensive health analysis, multi-language support, and actionable insights for diabetes prevention and management.
 
-**🔗 Repository:** [github.com/Parth-077/gluconova-ai](https://github.com/Parth-077/gluconova-ai)
+### ✨ Live Preview
+
+<div align="center">
+
+![GlucoNova AI Interface](screenshots/landing-page.png)
+
+*Modern, responsive interface with AI-powered diabetes risk prediction*
+
+</div>
 
 ### 🎯 Key Features
 
-1. **AI-Powered Risk Prediction** - Machine Learning model trained on PIMA Indians Diabetes Dataset
-2. **Medical Report OCR** - Automatic data extraction from medical reports (PDF/Images)
-3. **Multi-Language Support** - 11 languages (English + 10 Indian languages)
-4. **Advanced Health Analytics**:
-   - Health Score (out of 100)
-   - Preventive Score (out of 100)
-   - Color-coded Health Alerts
-   - Probability Analysis Chart
-   - Trend Prediction (3-month forecast)
-   - Personalized Action Priority
-   - Smart Retest Recommendations
-5. **Patient History Tracking** - Automatic trend analysis and comparison
-6. **Responsive Design** - Works on desktop, tablet, and mobile devices
+<table>
+<tr>
+<td width="50%">
+
+#### 🤖 AI-Powered Prediction
+- 98% accuracy ML model
+- Trained on PIMA dataset
+- Real-time risk assessment
+- Ensemble learning approach
+
+#### 📊 Advanced Analytics
+- Health Score (0-100)
+- Preventive Score (0-100)
+- Interactive charts
+- 3-month trend prediction
+
+</td>
+<td width="50%">
+
+#### 🌍 Multi-Language Support
+- 11 languages supported
+- English + 10 Indian languages
+- 1.6B+ potential users
+- Automatic translation
+
+#### 📱 Modern UI/UX
+- Responsive design
+- Glass-morphism effects
+- Smooth animations
+- Mobile-first approach
+
+</td>
+</tr>
+</table>
+
+### 📸 Screenshots
+
+<div align="center">
+
+#### 🏠 Landing Page
+![GlucoNova AI Landing Page](screenshots/landing-page.png)
+*Beautiful, modern interface with glass-morphism design*
+
+#### 📊 Health Dashboard (Coming Soon)
+![Dashboard](https://via.placeholder.com/800x450/8b5cf6/ffffff?text=Dashboard+Screenshot)
+
+#### 🌍 Multi-Language Support (Coming Soon)
+![Multi-Language](https://via.placeholder.com/800x450/f59e0b/ffffff?text=Multi-Language+Screenshot)
+
+</div>
+
+> **📝 Note:** Save your screenshot as `screenshots/landing-page.png` in the repository
 
 ## 🚀 Quick Start
 
@@ -36,35 +93,47 @@ GlucoNova AI is an advanced web-based diabetes risk prediction system powered by
 
 ### Installation
 
-1. **Install Dependencies**
 ```bash
-pip install flask flask-cors numpy scikit-learn pillow pytesseract pymupdf
-```
+# 1. Clone the repository
+git clone https://github.com/Parth-077/gluconova-ai.git
+cd gluconova-ai
 
-2. **Install Tesseract OCR**
-   - Download from: https://github.com/UB-Mannheim/tesseract/wiki
-   - Install to: `C:\Program Files\Tesseract-OCR\`
+# 2. Install dependencies
+pip install -r requirements.txt
 
-3. **Train the ML Model**
-```bash
+# 3. Install Tesseract OCR (Windows)
+# Download from: https://github.com/UB-Mannheim/tesseract/wiki
+# Install to: C:\Program Files\Tesseract-OCR\
+
+# 4. Train the ML model
 python train_model.py
 ```
 
 ### Running the Application
 
-**Automatic Launch:**
+**Option 1: Automatic Launch (Windows)**
 ```bash
 START_COMPLETE_SYSTEM_V2.bat
 ```
 
-**Manual Launch:**
+**Option 2: Manual Launch**
 ```bash
+# Terminal 1 - Backend
 python app.py
+
+# Terminal 2 - Frontend
 python serve_frontend.py
 ```
 
+**Option 3: Docker (Coming Soon)**
+```bash
+docker-compose up
+```
+
 ### Access the Application
-Open browser: **http://localhost:8080**
+🌐 Open browser: **http://localhost:8080**
+
+---
 
 ## 📁 Project Structure
 
@@ -207,18 +276,30 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📊 Project Statistics
 
-- Total Lines of Code: 5000+
-- Languages Supported: 11
-- Features: 12
-- Charts: 4
-- ML Accuracy: 98%
-- Translation Keys: 880+
+<div align="center">
+
+| Metric | Value |
+|--------|-------|
+| 📝 Lines of Code | 5000+ |
+| 🌍 Languages | 11 |
+| ⚡ Features | 12 |
+| 📈 Charts | 4 |
+| 🎯 ML Accuracy | 98% |
+| 🔤 Translation Keys | 880+ |
+| ⭐ GitHub Stars | ![Stars](https://img.shields.io/github/stars/Parth-077/gluconova-ai?style=social) |
+| 🍴 Forks | ![Forks](https://img.shields.io/github/forks/Parth-077/gluconova-ai?style=social) |
+
+</div>
 
 ## ✅ Project Status
 
-**Status**: COMPLETE & PRODUCTION-READY
-**Version**: 4.0
-**Quality**: Hospital-Grade
+<div align="center">
+
+![Status](https://img.shields.io/badge/Status-Complete-success?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-4.0-blue?style=for-the-badge)
+![Quality](https://img.shields.io/badge/Quality-Hospital--Grade-purple?style=for-the-badge)
+
+</div>
 
 ## ⭐ Show Your Support
 
