@@ -10,7 +10,7 @@
 
 **🔗 [View Repository](https://github.com/Parth-077/gluconova-ai) | [Report Bug](https://github.com/Parth-077/gluconova-ai/issues) | [Request Feature](https://github.com/Parth-077/gluconova-ai/issues)**
 
-![GlucoNova AI Preview](Screenshot 2026-02-11 214141.png)
+![GlucoNova AI Preview](Screenshot2026-02-11214141.png)
 
 </div>
 
@@ -308,5 +308,6 @@ If you find this project helpful, please give it a ⭐ on [GitHub](https://githu
 ---
 
 **Made with ❤️ by [Parth](https://github.com/Parth-077)**
+
 
 
